@@ -75,6 +75,19 @@ class MyTestCase(unittest.TestCase):
         print(div.divide())
 
     def test_random_allocation1(self):
+        parties = [("A", 30), ("B", 15), ("C", 7)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [11, 11, 5, 8, 11, 6, 15, 19, 12, 2])
+        div.set_party_preferences("B", [8, 17, 13, 8, 15, 6, 7, 4, 13, 9])
+        div.set_party_preferences("C", [11, 4, 10, 14, 3, 6, 10, 19, 13, 10])
+
+        print(div.divide())
+
+    def test_random_allocation2(self):
         parties = [("A", 30), ("B", 15), ("C", 7), ("D", 5), ("E", 5), ("F", 1)]
         items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
         div = Division()
@@ -90,20 +103,7 @@ class MyTestCase(unittest.TestCase):
 
         print(div.divide())
 
-    def test_random_allocation2(self):
-        parties = [("A", 30), ("B", 15), ("C", 7)]
-        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-        div = Division()
-        div.add_parties(parties)
-        div.add_items(items)
-
-        div.set_party_preferences("A", [11, 11, 5, 8, 11, 6, 15, 19, 12, 2])
-        div.set_party_preferences("B", [8, 17, 13, 8, 15, 6, 7, 4, 13, 9])
-        div.set_party_preferences("C", [11, 4, 10, 14, 3, 6, 10, 19, 13, 10])
-
-        print(div.divide())
-
-    def test_random_allocation1(self):
+    def test_random_allocation3(self):
         parties = [("A", 30), ("B", 15), ("C", 7), ("D", 5), ("E", 5), ("F", 4), ("G", 3), ("H", 1)]
         items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"]
         div = Division()
@@ -118,6 +118,236 @@ class MyTestCase(unittest.TestCase):
         div.set_party_preferences("F", [6, 10, 10, 2, 15, 2, 6, 1, 5, 5, 2, 4, 3, 2, 5, 11, 11])
         div.set_party_preferences("G", [4, 5, 6, 16, 1, 3, 1, 4, 7, 3, 6, 17, 7, 2, 6, 11, 1])
         div.set_party_preferences("H", [1, 1, 20, 1, 2, 10, 1, 7, 25, 1, 1, 11, 3, 1, 1, 13, 1])
+
+        print(div.divide())
+
+    def test_small_allocation1(self):
+        parties = [("A", 30), ("B", 15)]
+        items = ["1", "2", "3", "4", "5"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [50, 5, 15, 15, 15])
+        div.set_party_preferences("B", [5, 50, 15, 15, 15])
+
+        allo = div.divide()
+
+        print(allo)
+        # As we can see A should get item 1, B should get item 2
+        allocation_matrix = bundle_to_matrix(allo)
+        self.assertEqual(1., allocation_matrix[0][0][1])
+        self.assertEqual(1., allocation_matrix[1][1][1])
+
+        # A has the most mandates, therefore it should get most of 3,4 and 5
+        self.assertGreaterEqual(allocation_matrix[0][3][1] + allocation_matrix[0][4][1],
+                                allocation_matrix[1][3][1] + allocation_matrix[1][4][1])
+
+    def test_small_allocation2(self):
+        parties = [("A", 30), ("B", 15), ("C", 7)]
+        items = ["1", "2", "3", "4", "5"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [50, 5, 5, 20, 20])
+        div.set_party_preferences("B", [5, 50, 5, 20, 20])
+        div.set_party_preferences("C", [5, 5, 50, 20, 20])
+
+        allo = div.divide()
+
+        print(allo)
+        # As we can see A should get item 1, B should get item 2 and C should get item 3
+        allocation_matrix = bundle_to_matrix(allo)
+        self.assertEqual(1., allocation_matrix[0][0][1])
+        self.assertEqual(1., allocation_matrix[1][1][1])
+        self.assertEqual(1., allocation_matrix[2][2][1])
+
+        # A has the most mandates, therefore it should get a greater share of items 4 and 5
+        self.assertGreaterEqual(allocation_matrix[0][3][1] + allocation_matrix[0][4][1],
+                                allocation_matrix[1][3][1] + allocation_matrix[1][4][1])
+        self.assertGreaterEqual(allocation_matrix[0][3][1] + allocation_matrix[0][4][1],
+                                allocation_matrix[2][3][1] + allocation_matrix[2][4][1])
+
+        # B has more mandates than C therefore, it should get a greater share of items
+        self.assertGreaterEqual(allocation_matrix[1][3][1] + allocation_matrix[1][4][1],
+                                allocation_matrix[2][3][1] + allocation_matrix[2][4][1])
+
+    def test_small_allocation3(self):
+        parties = [("A", 30), ("B", 15), ("C", 7), ("D", 2)]
+        items = ["1", "2", "3", "4", "5"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [50, 5, 5, 5, 35])
+        div.set_party_preferences("B", [5, 50, 5, 5, 35])
+        div.set_party_preferences("C", [5, 5, 50, 5, 35])
+        div.set_party_preferences("D", [5, 5, 5, 50, 35])
+
+        allo = div.divide()
+
+        print(allo)
+        # As we can see A should get item 1, B should get item 2, C should get item 3 and D should get item 4
+        allocation_matrix = bundle_to_matrix(allo)
+        self.assertEqual(1., allocation_matrix[0][0][1])
+        self.assertEqual(1., allocation_matrix[1][1][1])
+        self.assertEqual(1., allocation_matrix[2][2][1])
+        self.assertEqual(1., allocation_matrix[3][3][1])
+
+        # A has the most mandates, therefore it should get a greater share of item 5
+        self.assertGreaterEqual(allocation_matrix[0][4][1], allocation_matrix[1][4][1])
+        self.assertGreaterEqual(allocation_matrix[0][4][1], allocation_matrix[2][4][1])
+        self.assertGreaterEqual(allocation_matrix[0][4][1], allocation_matrix[3][4][1])
+
+        # B has more mandates than C and D therefore, it should get a greater share of items
+        self.assertGreaterEqual(allocation_matrix[1][4][1], allocation_matrix[2][4][1])
+        self.assertGreaterEqual(allocation_matrix[1][4][1], allocation_matrix[3][4][1])
+
+        # C has more mandates than D therefore, it should get a greater share of item 5
+        self.assertGreaterEqual(allocation_matrix[2][4][1], allocation_matrix[3][4][1])
+
+    def test_algo_exceptions_less_items(self):
+        parties = [("A", 30), ("B", 15), ("C", 7), ("D", 5), ("E", 5), ("F", 1)]
+        items = ["1", "2", "3", "4", "5", "6"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4])
+        div.set_party_preferences("D", [7, 15, 3, 1, 5, 8])
+        div.set_party_preferences("E", [8, 6, 1, 2, 8, 1])
+        div.set_party_preferences("F", [15, 17, 1, 3, 4, 1])
+
+        print(div.divide())
+
+    def test_algo_exceptions_equal_mandates(self):
+        parties = [("A", 10), ("B", 10), ("C", 10), ("D", 10), ("E", 10), ("F", 10)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+        div.set_party_preferences("D", [7, 15, 3, 1, 5, 8, 2, 10, 10, 13, 1, 7, 6, 9, 3])
+        div.set_party_preferences("E", [8, 6, 1, 2, 8, 1, 5, 15, 3, 5, 18, 9, 13, 2, 4])
+        div.set_party_preferences("F", [15, 17, 1, 3, 4, 1, 1, 4, 4, 2, 20, 1, 5, 14, 8])
+
+        print(div.divide())
+
+    def test_algo_exceptions_not_big_difference_in_mandates(self):
+        parties = [("A", 10), ("B", 9), ("C", 8), ("D", 7), ("E", 6), ("F", 5)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+        div.set_party_preferences("D", [7, 15, 3, 1, 5, 8, 2, 10, 10, 13, 1, 7, 6, 9, 3])
+        div.set_party_preferences("E", [8, 6, 1, 2, 8, 1, 5, 15, 3, 5, 18, 9, 13, 2, 4])
+        div.set_party_preferences("F", [15, 17, 1, 3, 4, 1, 1, 4, 4, 2, 20, 1, 5, 14, 8])
+
+        print(div.divide())
+
+    def test_algo_exceptions_mid_difference_in_mandates(self):
+        parties = [("A", 10), ("B", 5), ("C", 5), ("D", 5), ("E", 1), ("F", 1)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+        div.set_party_preferences("D", [7, 15, 3, 1, 5, 8, 2, 10, 10, 13, 1, 7, 6, 9, 3])
+        div.set_party_preferences("E", [8, 6, 1, 2, 8, 1, 5, 15, 3, 5, 18, 9, 13, 2, 4])
+        div.set_party_preferences("F", [15, 17, 1, 3, 4, 1, 1, 4, 4, 2, 20, 1, 5, 14, 8])
+
+        print(div.divide())
+
+    def test_algo_exceptions_mid_difference_in_mandates2(self):
+        parties = [("A", 10), ("B", 5), ("C", 5), ("D", 5), ("E", 2), ("F", 1)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+        div.set_party_preferences("D", [7, 15, 3, 1, 5, 8, 2, 10, 10, 13, 1, 7, 6, 9, 3])
+        div.set_party_preferences("E", [8, 6, 1, 2, 8, 1, 5, 15, 3, 5, 18, 9, 13, 2, 4])
+        div.set_party_preferences("F", [15, 17, 1, 3, 4, 1, 1, 4, 4, 2, 20, 1, 5, 14, 8])
+
+        print(div.divide())
+
+    def test_algo_exception_small_number_of_parties1(self):
+        parties = [("A", 19), ("B", 5), ("C", 5)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+
+        print(div.divide())
+
+    def test_algo_exception_small_number_of_parties2(self):
+        parties = [("A", 20), ("B", 5), ("C", 5)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+
+        print(div.divide())
+
+    def test_algo_exception_small_number_of_parties3(self):
+        parties = [("A", 4), ("B", 1), ("C", 1)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+
+        print(div.divide())
+
+    def test_algo_exception_small_number_of_parties4(self):
+        parties = [("A", 3), ("B", 1), ("C", 1)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
+        div.set_party_preferences("C", [3, 1, 3, 20, 6, 4, 5, 10, 6, 7, 6, 5, 11, 7, 6])
+
+        print(div.divide())
+
+    def test_algo_exception_2_parties(self):
+        parties = [("A", 119), ("B", 1)]
+        items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+        div = Division()
+        div.add_parties(parties)
+        div.add_items(items)
+
+        div.set_party_preferences("A", [10, 10, 7, 1, 12, 5, 3, 14, 5, 5, 6, 13, 2, 5, 2])
+        div.set_party_preferences("B", [2, 10, 11, 2, 12, 2, 7, 9, 13, 2, 15, 1, 2, 4, 8])
 
         print(div.divide())
 

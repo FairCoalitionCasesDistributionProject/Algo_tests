@@ -76,7 +76,6 @@ class Division:
         parties_preferences_list = [party.getpreferences() for party in self.parties]
         allocation = proportional_allocation_with_bounded_sharing(parties_preferences_list,
                                                                   parties_mandates_list).round(2)
-        # return [list(bundle.enumerate_fractions()) for bundle in allocation]
         return allocation
 
     def __check_not_empty_item_list(self):
