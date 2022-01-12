@@ -174,16 +174,16 @@ class MyTestCase(unittest.TestCase):
                                 allocation_matrix[2][3][1] + allocation_matrix[2][4][1])
 
     def test_small_allocation3(self):
-        parties = [("A", 30), ("B", 15), ("C", 10), ("D", 10)]
-        items = ["1", "2", "3", "4", "5"]
+        parties = [("A", 30), ("B", 15), ("C", 10), ("D", 5)]
+        items = ["1", "2", "3", "4", "5", "6"]
         div = Division()
         div.add_parties(parties)
         div.add_items(items)
 
-        div.set_party_preferences("A", [50, 0, 0, 0, 50])
-        div.set_party_preferences("B", [0, 50, 0, 0, 50])
-        div.set_party_preferences("C", [0, 0, 50, 0, 50])
-        div.set_party_preferences("D", [0, 0, 0, 50, 50])
+        div.set_party_preferences("A", [50, 0, 0, 0, 25, 25])
+        div.set_party_preferences("B", [0, 50, 0, 0, 25, 25])
+        div.set_party_preferences("C", [0, 0, 50, 0, 25, 25])
+        div.set_party_preferences("D", [0, 0, 0, 50, 25, 25])
 
         allo = div.divide()
 
@@ -196,16 +196,16 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1., allocation_matrix[3][3][1])
 
         # A has the most mandates, therefore it should get a greater share of item 5
-        self.assertGreaterEqual(allocation_matrix[0][4][1], allocation_matrix[1][4][1])
-        self.assertGreaterEqual(allocation_matrix[0][4][1], allocation_matrix[2][4][1])
-        self.assertGreaterEqual(allocation_matrix[0][4][1], allocation_matrix[3][4][1])
+        self.assertGreaterEqual(allocation_matrix[0][4][1] + allocation_matrix[0][5][1], allocation_matrix[1][4][1] + allocation_matrix[1][5][1])
+        self.assertGreaterEqual(allocation_matrix[0][4][1] + allocation_matrix[0][5][1], allocation_matrix[2][4][1] + allocation_matrix[2][5][1])
+        self.assertGreaterEqual(allocation_matrix[0][4][1] + allocation_matrix[0][5][1], allocation_matrix[3][4][1] + allocation_matrix[3][5][1])
 
         # B has more mandates than C and D therefore, it should get a greater share of items
-        self.assertGreaterEqual(allocation_matrix[1][4][1], allocation_matrix[2][4][1])
-        self.assertGreaterEqual(allocation_matrix[1][4][1], allocation_matrix[3][4][1])
+        self.assertGreaterEqual(allocation_matrix[1][4][1] + allocation_matrix[1][5][1], allocation_matrix[2][4][1] + allocation_matrix[2][5][1])
+        self.assertGreaterEqual(allocation_matrix[1][4][1] + allocation_matrix[1][5][1], allocation_matrix[3][4][1] + allocation_matrix[3][5][1])
 
         # C has more mandates than D therefore, it should get a greater share of item 5
-        self.assertGreaterEqual(allocation_matrix[2][4][1], allocation_matrix[3][4][1])
+        self.assertGreaterEqual(allocation_matrix[2][4][1] + allocation_matrix[2][5][1], allocation_matrix[3][4][1] + allocation_matrix[3][5][1])
 
     def test_algo_exceptions_less_items(self):
         parties = [("A", 30), ("B", 15), ("C", 7), ("D", 5), ("E", 5), ("F", 1)]
