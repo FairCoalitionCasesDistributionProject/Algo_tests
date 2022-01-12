@@ -5,7 +5,11 @@ from division_item import Division_item
 
 class Division:
 
-    def __init__(self, parties: list[Political_party] = [], items: list[Division_item] = []):
+    def __init__(self, parties=None, items=None):
+        if items is None:
+            items = []
+        if parties is None:
+            parties = []
         self.parties = parties
         self.items = items
         self.num_of_items = len(items)
@@ -64,7 +68,8 @@ class Division:
 
     def set_party_preferences(self, name_of_party: str, new_preferences: list[float]):
         if len(new_preferences) != self.num_of_items:
-            raise Exception("Preference list is shorter than the number of items")
+            raise Exception("Preference list is of length: ", len(new_preferences), " number of items is: ",
+                            len(self.num_of_items))
 
         if name_of_party in self.parties:
             self.parties[self.parties.index(name_of_party)].setpreferences(new_preferences)
