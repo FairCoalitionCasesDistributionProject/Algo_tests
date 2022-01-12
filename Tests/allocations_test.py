@@ -174,16 +174,16 @@ class MyTestCase(unittest.TestCase):
                                 allocation_matrix[2][3][1] + allocation_matrix[2][4][1])
 
     def test_small_allocation3(self):
-        parties = [("A", 30), ("B", 15), ("C", 7), ("D", 2)]
+        parties = [("A", 30), ("B", 15), ("C", 10), ("D", 10)]
         items = ["1", "2", "3", "4", "5"]
         div = Division()
         div.add_parties(parties)
         div.add_items(items)
 
-        div.set_party_preferences("A", [50, 5, 5, 5, 35])
-        div.set_party_preferences("B", [5, 50, 5, 5, 35])
-        div.set_party_preferences("C", [5, 5, 50, 5, 35])
-        div.set_party_preferences("D", [5, 5, 5, 50, 35])
+        div.set_party_preferences("A", [50, 0, 0, 0, 50])
+        div.set_party_preferences("B", [0, 50, 0, 0, 50])
+        div.set_party_preferences("C", [0, 0, 50, 0, 50])
+        div.set_party_preferences("D", [0, 0, 0, 50, 50])
 
         allo = div.divide()
 
