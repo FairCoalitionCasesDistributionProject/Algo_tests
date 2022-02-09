@@ -1,6 +1,7 @@
 from fairpy.items.bounded_sharing import *
-from political_party import Political_party
-from division_item import Division_item
+from fairpy.items.leximin import *
+from algo_side.political_party import Political_party
+from algo_side.division_item import Division_item
 
 
 class Division:
@@ -77,10 +78,11 @@ class Division:
     def divide(self):
         self.__check_preference_lists()
         self.__check_not_empty_item_list()
-        parties_mandates_list = [party.getmandates() for party in self.parties]
-        parties_preferences_list = [party.getpreferences() for party in self.parties]
-        allocation = proportional_allocation_with_bounded_sharing(parties_preferences_list,
-                                                                  parties_mandates_list).round(2)
+        parties_preferences_list = [
+            [party.getpreferences()[j] / party.getmandates() for j in range(len(party.getpreferences()))] for party in
+            self.parties]
+        allocation = dominating_allocation_with_bounded_sharing(parties_preferences_list, leximin_optimal_allocation(
+            parties_preferences_list).round(3).utility_profile())
         return allocation
 
     def __check_not_empty_item_list(self):

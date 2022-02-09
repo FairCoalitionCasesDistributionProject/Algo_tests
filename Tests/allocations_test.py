@@ -1,6 +1,6 @@
 import unittest
-from division import Division
-from util import *
+from algo_side.division import Division
+from algo_side.util import *
 
 
 class MyTestCase(unittest.TestCase):

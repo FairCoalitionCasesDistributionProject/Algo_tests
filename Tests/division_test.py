@@ -1,7 +1,7 @@
 import unittest
-from division import Division
-from political_party import Political_party
-from division_item import Division_item
+from algo_side.division import Division
+from algo_side.political_party import Political_party
+from algo_side.division_item import Division_item
 
 
 class MyTestCase(unittest.TestCase):
