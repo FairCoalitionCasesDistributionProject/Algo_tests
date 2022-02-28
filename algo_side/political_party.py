@@ -1,13 +1,13 @@
 class Political_party:
-    def __init__(self, name: str, mandates: int, preferences: list[float] = []):
+    def __init__(self, id:int, mandates: int, preferences: list[float] = []):
         if mandates == 0:
             raise Exception("A party cannot have 0 mandates")
-        self.name = name
+        self.id = id
         self.mandates = mandates
         self.preferences = preferences
 
-    def getname(self):
-        return self.name
+    def getid(self):
+        return self.id
 
     def getmandates(self):
         return self.mandates
@@ -19,8 +19,8 @@ class Political_party:
         self.preferences = new_preferences
 
     def __eq__(self, other):
-        if isinstance(other, str):
-            return self.name == other
+        if isinstance(other, int):
+            return self.id == other
         if isinstance(other, Political_party):
-            return self.name == other.getname()
+            return self.id == other.getid()
         return False

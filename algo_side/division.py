@@ -1,19 +1,16 @@
 from fairpy.items.bounded_sharing import *
 from fairpy.items.leximin import *
-from algo_side.political_party import Political_party
-from algo_side.division_item import Division_item
+from .political_party import Political_party
+# from .division_item import Division_item
 
 
 class Division:
 
-    def __init__(self, parties=None, items=None):
-        if items is None:
-            items = []
+    def __init__(self, parties=None, number_of_items=0):
         if parties is None:
             parties = []
         self.parties = parties
-        self.items = items
-        self.num_of_items = len(items)
+        self.num_of_items = number_of_items
         self.num_of_parties = len(parties)
         self.number_of_mandates = sum([party.getmandates() for party in parties])
         self.__check_mandates_sum()
@@ -24,23 +21,21 @@ class Division:
     def get_parties(self):
         return self.parties
 
-    def add_parties(self, parties: list[tuple[str, int]]):
-        for party, mandates in parties:
-            self.add_party(party, mandates)
+    def add_parties(self, parties: list[tuple[int,int]]):
+        for id, mandates in parties:
+            self.add_party(id, mandates)
 
-    def add_party(self, party_name: str, mandates: int):
-        if party_name in self.parties:
-            return
-        self.parties.append(Political_party(party_name, mandates))
+    def add_party(self, id:int, mandates: int):
+        self.parties.append(Political_party(id, mandates))
         self.num_of_parties += 1
         self.number_of_mandates += mandates
         self.__check_mandates_sum()
 
-    def remove_parties(self, parties: list[str]):
+    def remove_parties(self, parties: list[int]):
         for party in parties:
             self.remove_party(party)
 
-    def remove_party(self, party_name: str):
+    def remove_party(self, party_name: int):
         if party_name in self.parties:
             party_index = self.parties.index(party_name)
             party = self.parties[party_index]
@@ -48,32 +43,11 @@ class Division:
             self.number_of_mandates -= party.getmandates()
             self.parties.pop(party_index)
 
-    def add_items(self, list_of_items: list[str]):
-        for item in list_of_items:
-            self.add_item(item)
-
-    def add_item(self, name_of_item: str):
-        if name_of_item in self.items:
-            return
-        self.items.append(Division_item(name_of_item))
-        self.num_of_items += 1
-
-    def remove_items(self, list_of_items: list[str]):
-        for item in list_of_items:
-            self.remove_item(item)
-
-    def remove_item(self, name_of_item: str):
-        if name_of_item in self.items:
-            self.items.remove(name_of_item)
-            self.num_of_items -= 1
-
-    def set_party_preferences(self, name_of_party: str, new_preferences: list[float]):
+    def set_party_preferences(self, id_of_party: int, new_preferences: list[float]):
         if len(new_preferences) != self.num_of_items:
-            raise Exception("Preference list is of length: ", len(new_preferences), " number of items is: ",
-                            len(self.num_of_items))
-
-        if name_of_party in self.parties:
-            self.parties[self.parties.index(name_of_party)].setpreferences(new_preferences)
+            raise Exception("Preference list is of length: ", len(new_preferences), " number of items is: ",self.num_of_items)
+        if id_of_party in self.parties:
+            self.parties[self.parties.index(id_of_party)].setpreferences(new_preferences)
 
     def divide(self):
         self.__check_preference_lists()
@@ -82,11 +56,11 @@ class Division:
             [party.getpreferences()[j] / party.getmandates() for j in range(len(party.getpreferences()))] for party in
             self.parties]
         allocation = dominating_allocation_with_bounded_sharing(parties_preferences_list, leximin_optimal_allocation(
-            parties_preferences_list).round(3).utility_profile())
+            parties_preferences_list).round(2).utility_profile())
         return allocation
 
     def __check_not_empty_item_list(self):
-        if self.items == 0:
+        if self.num_of_items == 0:
             raise Exception("No items to divide")
 
     def __check_preference_lists(self):
