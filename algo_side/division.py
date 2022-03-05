@@ -1,24 +1,20 @@
 from fairpy.items.bounded_sharing import *
 from fairpy.items.leximin import *
 from .political_party import Political_party
-# from .division_item import Division_item
-
-
 class Division:
 
-    def __init__(self, parties=None, number_of_items=0):
+    def __init__(self, number_of_items, parties=None):
         if parties is None:
             parties = []
         self.parties = parties
         self.num_of_items = number_of_items
         self.num_of_parties = len(parties)
         self.number_of_mandates = sum([party.getmandates() for party in parties])
-        self.__check_mandates_sum()
 
-    def get_items(self):
-        return self.items
+    def get_preferences(self)->list[list[float]]:
+        return [party.getpreferences() for party in self.parties]
 
-    def get_parties(self):
+    def get_parties(self)->list[Political_party]:
         return self.parties
 
     def add_parties(self, parties: list[tuple[int,int]]):
@@ -26,18 +22,19 @@ class Division:
             self.add_party(id, mandates)
 
     def add_party(self, id:int, mandates: int):
+        if(id in [party.id for party in self.parties]):
+            return
         self.parties.append(Political_party(id, mandates))
         self.num_of_parties += 1
         self.number_of_mandates += mandates
-        self.__check_mandates_sum()
 
     def remove_parties(self, parties: list[int]):
         for party in parties:
             self.remove_party(party)
 
-    def remove_party(self, party_name: int):
-        if party_name in self.parties:
-            party_index = self.parties.index(party_name)
+    def remove_party(self, party_id: int):
+        if party_id in self.parties:
+            party_index = self.parties.index(party_id)
             party = self.parties[party_index]
             self.num_of_parties -= 1
             self.number_of_mandates -= party.getmandates()
@@ -66,9 +63,5 @@ class Division:
     def __check_preference_lists(self):
         for party in self.parties:
             if len(party.getpreferences()) != self.num_of_items:
-                raise Exception("The party: " + party.getname() + " allocated only " + str(
+                raise Exception("The party: " + party.getid() + " allocated only " + str(
                     len(party.getpreferences())) + " out of " + str(self.num_of_items))
-
-    def __check_mandates_sum(self):
-        if self.number_of_mandates > 120:
-            raise Exception("Number of mandates can't exceed 120")
