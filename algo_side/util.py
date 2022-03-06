@@ -8,4 +8,8 @@ def bundle_to_matrix(allocation):
 
 
 def tuple_matrix_to_matrix(matrix):
-    return [[tup[1] for tup in matrix[i]] for i in range(len(matrix))]
+    return [[0 if tup[1]==-0.0 else tup[1] for tup in matrix[i]] for i in range(len(matrix))]
+
+
+def transpose(matrix):
+    return [[matrix[i][j] for i in range(len(matrix))] for j in range(len(matrix[0]))]
