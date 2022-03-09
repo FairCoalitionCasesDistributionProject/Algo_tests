@@ -4,12 +4,12 @@ from algo_side.political_party import Political_party
 
 class MyTestCase(unittest.TestCase):
     def test_creation(self):
-        div = Division()
+        div = Division(0)
         self.assertEqual([], div.parties)
         self.assertEqual(0, div.num_of_items)
         self.assertEqual(0, div.num_of_parties)
         self.assertEqual(0, div.number_of_mandates)
-        div = Division([Political_party(1, 5), Political_party(2, 7)],2)
+        div = Division(2, [Political_party(1, 5), Political_party(2, 7)])
         self.assertEqual([1, 2], div.parties)
         self.assertEqual([Political_party(1, 5), Political_party(2, 7)], div.parties)
         self.assertEqual(2, div.num_of_items)
@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_political_party_addition_removal(self):
-        div = Division([Political_party(1, 5), Political_party(2, 7)])
+        div = Division(3, [Political_party(1, 5), Political_party(2, 7)])
         div.add_party(3, 6)
         self.assertEqual([1, 2, 3], div.parties)
         self.assertEqual(3, div.num_of_parties)
@@ -41,7 +41,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(12, div.number_of_mandates)
 
     def test_setting_parties_preference(self):
-        div = Division([Political_party(1, 5), Political_party(2, 7)], 2)
+        div = Division(2, [Political_party(1, 5), Political_party(2, 7)])
         div.set_party_preferences(3, [5, 6])
         div.set_party_preferences(1, [1, 2])
         self.assertEqual(1, div.parties[0].getpreferences()[0])

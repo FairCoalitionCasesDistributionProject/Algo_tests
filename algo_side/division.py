@@ -3,7 +3,7 @@ from fairpy.items.leximin import *
 from .political_party import Political_party
 class Division:
 
-    def __init__(self, number_of_items, parties=None):
+    def __init__(self, number_of_items: int, parties=None):
         if parties is None:
             parties = []
         self.parties = parties
